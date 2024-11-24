@@ -1,0 +1,8 @@
+streamlit
+pandas
+altair
+leafmap
+geopandas
+gspread
+oauth2client
+gspread_dataframe
