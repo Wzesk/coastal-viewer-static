@@ -3,9 +3,8 @@ import pandas as pd
 import streamlit as st
 import leafmap.foliumap as leafmap
 import geopandas as gpd
-# import os
-# os.environ["MAPTILER_KEY"] = "H2po2DoUxvE0BAWFzoa0"
-
+from littoral import db_interaction as dbi
+g_interventions = dbi.GSheetConnection('16tbbaV_klfB8ZfuwMMJrLuTxhP2W_cPvyYmpDq3ba_s','interventions')
 
 # Show the page title and description.
 st.set_page_config(page_title="Shoreline Interevention Explorer",layout="wide")
@@ -27,7 +26,7 @@ tab1, tab2, tab3 = viewer.tabs(["Table", "Timeline","Map"])
 # reruns (e.g. if the user interacts with the widgets).
 @st.cache_data
 def load_data():
-    df = pd.read_csv("data/reclaimed_Islands_gt_bg.csv") 
+    df = g_interventions.get_sheet_pandas()
     return df
 
 
