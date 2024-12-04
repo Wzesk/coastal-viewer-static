@@ -95,7 +95,7 @@ with tab3:
     ave_long = islands["Longitude"].mean()
     m = leafmap.Map(center=[ave_lat, ave_long], draw_export=True, zoom=7)
 
-    gdf = gpd.read_file("data/test_proj_world_coordinates.geojson")
+    gdf = gpd.read_file("data/countour/20160103T053712_20160103T053706_T43NCE_wsl_world_coordinates.geojson")#"data/test_proj_world_coordinates.geojson")
 
     m.add_gdf(gdf, layer_name="shorelines", zoom_to_layer=False)
 
