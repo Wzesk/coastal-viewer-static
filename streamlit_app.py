@@ -8,19 +8,35 @@ g_interventions = dbi.GSheetConnection('16tbbaV_klfB8ZfuwMMJrLuTxhP2W_cPvyYmpDq3
 
 # Show the page title and description.
 st.set_page_config(page_title="Shoreline Interevention Explorer",layout="wide")
-st.title("Shoreline Interevention Explorer")
-st.write(
-    """
-    Explore the impact of human activities on the coastal environment.
-    """
-)
+
+# optional title
+title = False
+if title:
+    st.title("Shoreline Interevention Explorer")
+    st.write(
+        """
+        Explore the impact of human activities on the coastal environment.
+        """
+    )
+
 # interactions 
 interactions = st.container(border=False)
 # data views
 viewer = st.container(border=False)
-##setting up tab layout
-tab1, tab2, tab3 = viewer.tabs(["Table", "Timeline","Map"])
 
+use_tabs = False
+if use_tabs:
+    ##setting up tab layout
+    tab1, tab2, tab3 = viewer.tabs(["Table", "Timeline","Map"])
+    map_height = 500
+    chart_height = 320
+else: 
+    col = viewer.columns((4, 6), gap='medium')
+    tab1 = col[0]
+    tab2 = st.container(border=False)
+    tab3 = col[1]
+    map_height = 400
+    chart_height = 200
 
 # Load the data from a CSV. We're caching this so it doesn't reload every time the app
 # reruns (e.g. if the user interacts with the widgets).
@@ -67,7 +83,7 @@ chart = (
         y=alt.Y("Area_sqm:Q", title="Total Area (sqm)"),
         color="Type:N",
     )
-    .properties(height=320)
+    .properties(height=chart_height)
 )
 tab2.altair_chart(chart, use_container_width=True)
 
@@ -86,4 +102,4 @@ with tab3:
     m.add_points_from_xy(islands, x="Longitude", y="Latitude")
 
     m.add_basemap("SATELLITE")
-    m.to_streamlit(height=500)
+    m.to_streamlit(height=map_height)
