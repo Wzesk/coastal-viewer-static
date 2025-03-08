@@ -1,4 +1,6 @@
 import pandas as pd
+import shapely.wkt
+import geopandas as gpd
 # import gspread
 # from oauth2client.service_account import ServiceAccountCredentials
 # from gspread_dataframe import get_as_dataframe, set_with_dataframe
@@ -29,3 +31,9 @@ class GSheetConnection:
     #     set_with_dataframe(worksheet , df)
     #     df2 = get_as_dataframe(worksheet)
     #     return df2
+
+
+def load_islands():
+    df = pd.read_csv('data/island_data/island-polygon.csv', sep='\t')
+    gdf = gpd.GeoDataFrame(df, geometry=df['WKT'].apply(shapely.wkt.loads))
+    return gdf

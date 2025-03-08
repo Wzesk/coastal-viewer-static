@@ -2,15 +2,15 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 
+import leafmap
 import leafmap.foliumap as leafmap
+#import leafmap.toolbar as toolbar
 #import leafmap.mapbox as leafmap
 
 import geopandas as gpd
 from littoral import db_interaction as dbi
 g_interventions = dbi.GSheetConnection('16tbbaV_klfB8ZfuwMMJrLuTxhP2W_cPvyYmpDq3ba_s','interventions')
 import os
-
-
 
 def main():
 
@@ -32,27 +32,25 @@ def main():
     # data views
     viewer = st.container(border=False)
 
+    #set height for view windows
+    vis_height = 600
 
     # turn on different tab layouts.  1 for top level tabls. 2 to tab the map and timeline
     use_tabs = 2
     if use_tabs == 1:
         ##setting up tab layout
         tab1, tab2, tab3 = viewer.tabs(["Table", "Timeline","Map"])
-        map_height = 500
-        chart_height = 320
+
     elif use_tabs == 2:
         col = viewer.columns((4, 6), gap='medium')
         tab1 = col[0]
-        tab2, tab3 = col[1].tabs(["Timeline","Map"])
-        map_height = 400
-        chart_height = 400   
+        tab3, tab2 = col[1].tabs(["Map","Timeline"])
+ 
     else: 
         col = viewer.columns((4, 6), gap='medium')
         tab1 = col[0]
         tab2 = st.container(border=False)
         tab3 = col[1]
-        map_height = 400
-        chart_height = 200
 
     # Load the data from a CSV. We're caching this so it doesn't reload every time the app
     # reruns (e.g. if the user interacts with the widgets).
@@ -68,7 +66,7 @@ def main():
     types = interactions.multiselect(
         "Type",
         df.Type.unique(),
-        default=["Extension"],
+        default=["Extension","Maritime Development","Airport Development","New Island","Environmental Protection"],
     )
 
     # Show a slider widget with the years using `st.slider`.
@@ -87,6 +85,7 @@ def main():
         df_abridged,
         use_container_width=True,
         column_config={"Date": st.column_config.TextColumn("Date")},
+        height=vis_height+60,
     )
 
     # see the extent of projects by year
@@ -99,7 +98,7 @@ def main():
             y=alt.Y("Area_sqm:Q", title="Total Area (sqm)"),
             color="Type:N",
         )
-        .properties(height=chart_height)
+        .properties(height=vis_height)
     )
     tab2.altair_chart(chart, use_container_width=True)
 
@@ -121,13 +120,16 @@ def main():
                 gdf = gpd.read_file(data_dir+file)
                 m.add_gdf(gdf, layer_name=file, zoom_to_layer=False)
 
+        #adding basemap data
+        isl_gdf = dbi.load_islands()
+        m.add_gdf(isl_gdf, layer_name="islands", zoom_to_layer=False, color="orange")
 
+        # adding interventions
         m.add_points_from_xy(islands, x="Longitude", y="Latitude")
 
         m.add_basemap('Esri.WorldImagery')#'Stadia.AlidadeSatellite')
 
-        m.to_streamlit(height=map_height)
-
+        m.to_streamlit(height=vis_height)
 
 if __name__ == "__main__":
     main()
