@@ -96,7 +96,12 @@ def main():
         .encode(
             x=alt.X("Date:N", title="Year"),
             y=alt.Y("Area_sqm:Q", title="Total Area (sqm)"),
-            color="Type:N",
+            #color="Type:N",
+            color=alt.Color("Type:N", legend=alt.Legend(
+                            orient='none',
+                            legendX=40, legendY=10,
+                            direction='vertical',
+                            titleAnchor='middle')),
         )
         .properties(height=vis_height)
     )
